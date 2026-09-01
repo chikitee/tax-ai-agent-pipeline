@@ -9,18 +9,14 @@
 
 ---
 
-## 🎬 Live Product Demo (End-to-End Pipeline)
-<div align="center">
-  <img src="demo.gif" width="100%" alt="Tax AI Agent Pipeline Demo"/>
-</div>
+## 🎬 Live Product Demos & Core Workflows
 
+| 1️⃣ End-to-End 세무 CS & 국세청 실시간 판별 | 2️⃣ Gemini Multimodal 서류(사업자등록증) OCR |
+| :---: | :---: |
+| <img src="demo.gif" width="100%" alt="End-to-End Pipeline Demo"/> | <img src="directOCR.gif" width="100%" alt="Vision OCR Demo"/> |
+| **TA DB 매핑 + 국세청 API 연동 + 1.5초 실시간 응대** | **비정형 서류 이미지 업로드 즉시 구조화 JSON 자동 추출** |
 ---
-* **Module 2. Gemini Multimodal Vision API 기반 사업자등록증 OCR**
-  * 사업자등록증 서류 이미지를 업로드하면 최신 Gemini Vision 엔진이 메타데이터를 구조화된 JSON 객체로 즉시 추출.
 
-  <div align="center">
-    <img src="directOCR.gif" width="90%" alt="OCR Demo"/>
-  </div>
 
 ## 📌 1. Project Background & Pain Points (프로젝트 배경 및 문제 정의)
 
