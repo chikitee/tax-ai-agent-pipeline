@@ -1,0 +1,6 @@
+﻿Timestamp,Phone,Name,Tax_Type,AI_Response_Log
+2026-08-30 15:48:48,01098204849,김성서,부가가치세 일반과세자,안녕하세요 김성서 대표님! 조회 결과 [부가가치세 일반과세자] 상태입니다. API 키 연동을 확인해주세요.
+2026-08-30 15:49:04,01099469144,송희영,부가가치세 일반과세자,안녕하세요 송희영 대표님! 조회 결과 [부가가치세 일반과세자] 상태입니다. API 키 연동을 확인해주세요.
+2026-08-30 15:52:38,01059827931,서아영,부가가치세 일반과세자,"⚠️ LLM API 호출 중 오류가 발생했습니다. 에러 내용: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'This model models/gemini-2.0-flash is no longer available. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.', 'status': 'NOT_FOUND'}}"
+2026-08-30 15:52:40,01028022940,안도연,부가가치세 일반과세자,"⚠️ LLM API 호출 중 오류가 발생했습니다. 에러 내용: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'This model models/gemini-2.0-flash is no longer available. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.', 'status': 'NOT_FOUND'}}"
+2026-08-30 15:55:47,01012519233,이도현,부가가치세 간이과세자,⚠️ LLM API 호출 중 오류가 발생했습니다. 에러 내용: name 'prompt' is not defined
