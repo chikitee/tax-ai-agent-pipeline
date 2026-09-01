@@ -11,10 +11,42 @@
 
 ## 🎬 Live Product Demos & Core Workflows
 
-| 1️⃣ End-to-End 실시간 세무 CS | 2️⃣ TA DB 샘플링 & 진단 동기화 | 3️⃣ Gemini Multimodal 서류 OCR |
-| :---: | :---: | :---: |
-| <img src="demo.gif" width="100%" alt="End-to-End CS Demo"/> | <img src="random.gif" width="100%" alt="Random DB Sampling Demo"/> | <img src="directOCR.gif" width="100%" alt="Vision OCR Demo"/> |
-| **국세청 API 연동 및 1.5초 실시간 응대** | **150건 ERP DB 고속 매핑 및 분기 판정** | **사업자등록증 서류 JSON 구조화 추출** |
+### 1️⃣ End-to-End 실시간 세무 CS & 국세청 과세유형 진단
+> **국세청 API 실시간 동기화 및 1.5초 이내 1:1 맞춤형 세무 응대문 자동 생성**
+
+<div align="center">
+  <img src="demo.gif" width="95%" alt="End-to-End CS Demo"/>
+</div>
+
+* **고객 식별 & 매핑**: 고객 정보 유입 즉시 TA ERP DB 고속 탐색
+* **실시간 세법 분기**: 국세청 공공데이터 API 연동 기반 일반/간이/세금계산서 발급 여부 판별
+* **정량적 성과**: 단순 반복 CS 리드타임 180초 → **1.5초 (99.2% 단축)**
+
+---
+
+### 2️⃣ TA ERP DB 고속 매핑 & 과세유형 분기 판정
+> **150건 규모 세무회계 ERP DB 실시간 탐색 및 7월 부가세 신고 대상 자동 판정**
+
+<div align="center">
+  <img src="random.gif" width="95%" alt="Random DB Sampling Demo"/>
+</div>
+
+* **고속 탐색 엔진**: `Pandas` 기반 150건 사업자 데이터셋 실시간 역인덱싱 및 추출
+* **세법 룰 엔진 적용**: 부가가치세법 제36조 및 제67조 기반 신고 대상 여부 자동 분기
+* **전문가 백오피스 동기화**: 세무사 전표 입력용 표준 메타데이터 카드 실시간 렌더링
+
+---
+
+### 3️⃣ Gemini Multimodal Vision API 기반 사업자등록증 OCR
+> **비정형 사업자등록증 서류 이미지 유입 시 Zero-shot JSON 구조화 파싱**
+
+<div align="center">
+  <img src="directOCR.gif" width="95%" alt="Vision OCR Demo"/>
+</div>
+
+* **멀티모달 파싱**: 사업자등록증 이미지 업로드 즉시 대표자명, 상호, 사업자번호, 개업일, 업종코드 추출
+* **무중단 파이프라인**: 비정형 서류 유입 시에도 수동 타이핑 없는 1-Click 자동 진단 완결
+
 ---
 
 
