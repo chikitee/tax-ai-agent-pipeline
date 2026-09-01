@@ -15,6 +15,12 @@
 </div>
 
 ---
+* **Module 2. Gemini Multimodal Vision API 기반 사업자등록증 OCR**
+  * 사업자등록증 서류 이미지를 업로드하면 최신 Gemini Vision 엔진이 메타데이터를 구조화된 JSON 객체로 즉시 추출.
+
+  <div align="center">
+    <img src="directOCR.gif" width="90%" alt="OCR Demo"/>
+  </div>
 
 ## 📌 1. Project Background & Pain Points (프로젝트 배경 및 문제 정의)
 
