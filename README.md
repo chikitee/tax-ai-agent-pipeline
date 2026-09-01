@@ -15,7 +15,7 @@
 > **국세청 API 실시간 동기화 및 1.5초 이내 1:1 맞춤형 세무 응대문 자동 생성**
 
 <div align="center">
-  <img src="demo.gif" width="95%" alt="End-to-End CS Demo"/>
+  <img src="chat.gif" width="95%" alt="End-to-End CS Demo"/>
 </div>
 
 * **고객 식별 & 매핑**: 고객 정보 유입 즉시 TA ERP DB 고속 탐색
@@ -28,7 +28,7 @@
 > **150건 규모 세무회계 ERP DB 실시간 탐색 및 7월 부가세 신고 대상 자동 판정**
 
 <div align="center">
-  <img src="random_v1.gif" width="95%" alt="Random DB Sampling Demo"/>
+  <img src="random.gif" width="95%" alt="Random DB Sampling Demo"/>
 </div>
 
 * **고속 탐색 엔진**: `Pandas` 기반 150건 사업자 데이터셋 실시간 역인덱싱 및 추출
