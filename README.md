@@ -9,6 +9,13 @@
 
 ---
 
+## 🎬 Live Product Demo (End-to-End Pipeline)
+<div align="center">
+  <img src="demo.gif" width="100%" alt="Tax AI Agent Pipeline Demo"/>
+</div>
+
+---
+
 ## 📌 1. Project Background & Pain Points (프로젝트 배경 및 문제 정의)
 
 세무법인 및 회계법인의 부가가치세 신고 기간마다 반복되는 **단순 조회성 인바운드 CS 및 과세유형 확인 작업의 병목(Bottleneck)**을 해결하기 위한 End-to-End AX(AI Transformation) 프로덕트입니다[cite: 2, 5].
