@@ -11,10 +11,10 @@
 
 ## 🎬 Live Product Demos & Core Workflows
 
-| 1️⃣ End-to-End 세무 CS & 국세청 실시간 판별 | 2️⃣ Gemini Multimodal 서류(사업자등록증) OCR |
-| :---: | :---: |
-| <img src="demo.gif" width="100%" alt="End-to-End Pipeline Demo"/> | <img src="directOCR.gif" width="100%" alt="Vision OCR Demo"/> |
-| **TA DB 매핑 + 국세청 API 연동 + 1.5초 실시간 응대** | **비정형 서류 이미지 업로드 즉시 구조화 JSON 자동 추출** |
+| 1️⃣ End-to-End 실시간 세무 CS | 2️⃣ TA DB 샘플링 & 진단 동기화 | 3️⃣ Gemini Multimodal 서류 OCR |
+| :---: | :---: | :---: |
+| <img src="demo.gif" width="100%" alt="End-to-End CS Demo"/> | <img src="random.gif" width="100%" alt="Random DB Sampling Demo"/> | <img src="directOCR.gif" width="100%" alt="Vision OCR Demo"/> |
+| **국세청 API 연동 및 1.5초 실시간 응대** | **150건 ERP DB 고속 매핑 및 분기 판정** | **사업자등록증 서류 JSON 구조화 추출** |
 ---
 
 
