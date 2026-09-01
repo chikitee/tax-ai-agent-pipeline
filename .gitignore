@@ -1,4 +1,22 @@
+# 보안 환경변수
 .env
-*.env
+.env.local
+
+# 파이썬 캐시 및 가상환경
 __pycache__/
-.streamlit/secrets.toml
+*.py[cod]
+venv/
+.venv/
+
+# 임시 스크립트 및 잡파일
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.csv
+~$*.xlsx
+pip install requests.py
+build_clean_db.py
+add_ta_columns.py
+import pandas as pd.py
+Streamlit*
