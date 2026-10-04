@@ -1,226 +1,251 @@
-# 🏛️ Tax AI Agent Pipeline: 세무 CS & 과세유형 자동 판별 시스템
+# 🏛️ 세무 CS 자동화 AI Agent
 
-> **세무법인 실무 병목(CS/과세유형 조회)을 해결하기 위한 Full-stack AI Agent 파이프라인 & 샌드박스 대시보드**  
-> *Target: Big 4 Accounting Firm AX Advisory / AI Product Engineer Track Portfolio*
+**"이번 7월 부가세 신고 대상인가요?" 같은 반복 문의에 자동으로 답해 주는 세무법인용 AI 상담 도우미입니다.**
+
+고객이 이름과 전화번호를 남기거나 사업자등록증 사진을 올리면, 시스템이 ① 사무소 고객 DB에서 고객을 찾고 ② 국세청에서 사업자 상태와 과세유형을 조회한 뒤 ③ 부가가치세법 기준에 따라 신고 대상 여부를 판정하고 ④ 고객에게 보낼 안내 문장과 담당 세무사용 정보 카드를 함께 만들어 줍니다.
 
 <div align="left">
   <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white"/>
-  <img src="https://img.shields.io/badge/UI_Framework-Streamlit-FF4B4B?style=flat&logo=streamlit&logoColor=white"/>
-  <img src="https://img.shields.io/badge/LLM_Engine-Gemini_2.0_Flash-4285F4?style=flat&logo=google&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Data_API-NTS_Public_API-009688?style=flat"/>
-  <img src="https://img.shields.io/badge/Architecture-End_to_End_Pipeline-orange?style=flat"/>
+  <img src="https://img.shields.io/badge/화면-Streamlit-FF4B4B?style=flat&logo=streamlit&logoColor=white"/>
+  <img src="https://img.shields.io/badge/AI-Google_Gemini-4285F4?style=flat&logo=google&logoColor=white"/>
+  <img src="https://img.shields.io/badge/데이터-국세청_공공데이터_API-009688?style=flat"/>
+</div>
+
+<div align="center">
+  <img src="demo.gif" width="90%" alt="전체 화면 데모: 왼쪽 고객 상담창, 오른쪽 세무사용 백오피스"/>
+  <br/><sub>왼쪽은 고객이 보는 상담창, 오른쪽은 세무 담당자가 보는 백오피스 화면입니다.</sub>
 </div>
 
 ---
 
-## ⚡ 30-Second Executive Summary
+## 📌 한눈에 보기
 
-| 구분 | 주요 내용 (Core Value) |
+| 항목 | 내용 |
 | :--- | :--- |
-| **Problem** | • 부가가치세신고철 단순 과세유형 문의로 인한 세무 실무자 업무 마비<br>• 홈택스 수기 조회 및 TA 세무 프로그램 매핑 과정의 인적 리소스 소모 및 병목 현상 |
-| **Solution** | • **국세청 공공데이터 API** 실시간 연동을 통한 사업자 상태 및 과세유형(간이/일반/면세/폐업) 자동 판정<br>• **Excel DB(TA ERP 스키마)** 매핑 기반의 채널톡 '더보기 상세 메모' 카드 자동 파싱<br>• **Gemini 2.0 Flash LLM**에 실시간 API 검증 데이터를 주입(Grounding)하여 1:1 맞춤형 세무 상담 문장 실시간 생성 |
-| **Tech Novelty** | • 특정 메신저 SaaS(채널톡 등)의 유료/API 제약에 종속되지 않는 **Streamlit 기반 독립형 AI 샌드박스 Product** 직접 구축<br>• 비결정론적 LLM의 할루시네이션을 국세청 확정 데이터로 제어하는 **Deterministic Validation Architecture** 적용 |
-| **Business Impact** | • 고객 1건당 단순 세무 CS 처리 시간: **기존 180초 → 1초 이내 단축 (99% 절감)**<br>• 과세유형 오판단 및 세금계산서 발급 착오로 인한 세무 리스크: **0% 달성** |
+| **해결하려는 문제** | 부가세 신고 기간마다 몰리는 단순 과세유형 문의 때문에 실무자가 다른 업무를 못 하는 상황 |
+| **해결 방법** | 고객 DB 조회 + 국세청 실시간 조회 + 세법 규칙 판정 + AI 안내문 작성을 한 번에 자동 처리 |
+| **핵심 원칙** | 과세유형과 신고 대상 판단은 **국세청 데이터와 정해진 규칙**으로 하고, AI는 **안내 문장 작성만** 맡김 |
+| **기대 효과** | 문의 1건 처리 시간 약 3분(180초) → 1.5초 이내 (데모 환경 측정 기준) |
 
 ---
 
-## 🎬 Live Product Demos & Core Workflows
+## 1. 왜 만들었나요? (문제 정의)
 
-### 1️⃣ End-to-End 실시간 세무 CS & 국세청 과세유형 진단
-> **국세청 공공데이터 API 실시간 동기화 및 1.5초 이내 1:1 맞춤형 세무 응대문 생성**
+부가가치세 신고철이 되면 세무법인에는 "저 이번에 신고해야 하나요?", "세금계산서 발급할 수 있나요?" 같은 **단순 조회성 문의가 한꺼번에 몰립니다.**
 
-<div align="center">
-  <img src="chat.gif" width="95%" alt="End-to-End CS Demo"/>
-</div>
+### 기존 방식 (사람이 직접 처리)
 
-* **고객 식별 & 매핑**: 고객 메신저 정보 유입 즉시 TA ERP DB 역인덱싱 및 실시간 매핑
-* **실시간 세법 분기**: 국세청 Open API 연동 기반 일반/간이/세금계산서 발급 여부 정밀 판정
-* **정량적 성과**: 단순 반복 인바운드 CS 리드타임 180초 → **1.5초 (99.2% 단축)**
+문의 1건마다 아래 과정을 손으로 반복해야 했습니다. 건당 평균 약 **3분(180초)** 이 걸린다고 가정했습니다.
 
----
+1. 메신저로 들어온 고객이 누구인지 확인
+2. 세무 프로그램(TA)에서 고객 정보 검색
+3. 홈택스에서 과세유형 직접 조회
+4. 세금계산서 발급 가능 여부 확인
+5. 고객에게 보낼 답변 작성
 
-### 2️⃣ TA ERP DB 고속 매핑 & 부가세 신고 대상 자동 판정
-> **150건 규모 세무회계 ERP DB 실시간 탐색 및 7월 부가세 확정신고 대상 자동 분기**
+### 판단이 헷갈리는 지점
 
-<div align="center">
-  <img src="random.gif" width="95%" alt="Random DB Sampling Demo"/>
-</div>
+특히 **간이과세자**는 조건에 따라 답이 달라서, 경험이 적은 직원이 잘못 안내할 위험이 있습니다.
 
-* **고속 탐색 엔진**: `Pandas` 기반 사업자 데이터셋 실시간 역인덱싱 및 추출
-* **세법 룰 엔진 적용**: 부가가치세법 제36조 및 제67조 기반 신고 대상 여부 자동 분기
-* **전문가 백오피스 동기화**: 세무사 전표 입력용 표준 메타데이터 카드 실시간 렌더링
+| 구분 | 기준 (직전 연도 공급대가) | 7월 확정신고 |
+| :--- | :--- | :--- |
+| 세금계산서 발급 간이과세자 | 4,800만 원 이상 ~ 1억 400만 원 미만 | 상반기(1~6월)에 세금계산서를 발급했다면 **신고 대상** |
+| 영수증 전용 간이과세자 | 4,800만 원 미만 | 7월 신고 **대상 아님** (다음 해 1월 정기신고) |
 
----
-
-### 3️⃣ Gemini Multimodal Vision API 기반 사업자등록증 OCR
-> **비정형 사업자등록증 서류 이미지 유입 시 Zero-shot JSON 구조화 파싱**
-
-<div align="center">
-  <img src="directOCR.gif" width="95%" alt="Vision OCR Demo"/>
-</div>
-
-* **멀티모달 파싱**: 사업자등록증 이미지 업로드 즉시 대표자명, 상호, 사업자번호, 개업일, 업종코드 추출
-* **무중단 파이프라인**: 비정형 서류 유입 시에도 수동 타이핑 없는 1-Click 자동 진단 완결
+또 고객 정보(상호, 사업자번호, 개업일자, 업종)를 세무 프로그램 메모란에 **하나하나 다시 입력**하는 일도 번거로웠습니다.
 
 ---
 
-## 📌 1. Project Background & Pain Points (배경 및 문제 정의)
-
-세무법인 및 회계법인의 부가가치세 신고 기간마다 발생하는 **단순 조회성 인바운드 CS 폭증 및 과세유형 확인 작업의 병목(Bottleneck)**을 해결하기 위한 **End-to-End AX(AI Transformation) 프로덕트**입니다.
-
-### 🔴 As-Is (기존 수동 프로세스의 한계)
-* **심각한 공수 낭비**: "이번 부가세 신고 대상인가요?" 문의 1건당 [고객 식별 → 세무 ERP(TA) 검색 → 홈택스 과세유형 수동 조회 → 세금계산서 발급 권한 확인 → 메신저 응대문 작성]까지 **건당 평균 3분(180초)** 소요[cite: 1, 3].
-* **복합 세법 분기 시 인적 오류 위험**: 
-  - **세금계산서 발급 간이과세자**(직전 연도 공급대가 4,800만 원 이상 ~ 1억 400만 원 미만): 상반기 발급 내역이 있을 경우 7월 확정신고 대상[cite: 2, 3].
-  - **영수증 전용 간이과세자**(직전 연도 공급대가 4,800만 원 미만): 7월 신고 의무 면제 (다음 해 1월 정기신고)[cite: 2, 3].
-  - 위와 같은 복잡한 세법 분기로 인해 주니어 세무 인력의 오안내 리스크 상존.
-* **백오피스 전표 입력 지연**: 유입된 사업자 메타데이터(상호, 사업자번호, 개업일자, 업종코드)를 세무 프로그램에 일일이 재입력하는 비효율 발생[cite: 3].
-
-### 🟢 To-Be (AX AI Agent 파이프라인 도입 후 개선)
-* **End-to-End 원스톱 파이프라인**: 텍스트 및 서류 이미지 유입 즉시 **[TA DB 매핑 + 국세청 API 실시간 동기화 + Gemini Multimodal/LLM 세법 추론 + 전문가 백오피스 카드 렌더링]**을 1.5초 내 자동 완결[cite: 1, 3].
-* **업무 리드타임 99.2% 단축**: 180초 → 1.5초로 단축하여 실무진의 단순 반복 업무를 제거하고 고부가가치 세무 자문 업무 집중 환경 조성[cite: 1, 3].
-
----
-
-## ⚙️ 2. System Architecture & Data Flow (시스템 구조)
+## 2. 어떻게 동작하나요?
 
 ```text
-┌────────────────────────────────────────────────────────────────────────┐
-│                        [Omni-Channel Inflow]                           │
-│   - Chat Input: Representative Name & Phone Number                     │
-│   - Multimodal Input: Business Registration Certificate Image (OCR)    │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                   [Data Extraction & Preprocessing]                    │
-│   - Gemini 2.0 Flash Vision API: Zero-shot JSON Document Parsing       │
-│   - Pandas Fast-Lookup Engine: TA Database Matching & Validation       │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                  [Real-Time Tax Sync & Rule Engine]                    │
-│   - NTS Public Data API (data.go.kr / nts-businessman/v1/status)       │
-│   - Tax Rule Grounding: 부가가치세법 제36조 & 제67조 적용              │
-│     * 일반과세자: 7월 제1기 확정신고 대상 / 세금계산서 발급 의무       │
-│     * 세금계산서 발급 간이: 조건부 대상 (상반기 발급 시 7월 신고)     │
-│     * 영수증 전용 간이: 7월 신고 대상 제외 (내년 1월 정기신고)        │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│               [Dual-Delivery AI Sandbox Dashboard]                     │
-│                                                                        │
-│   [Left] Client Messenger UI            [Right] Back-office Dashboard  │
-│   - KakaoTalk Style Chatbot             - Real-time Metadata Card      │
-│   - Gemini Grounded Tax Response        - 1-Click Clipboard Copy       │
-│   - Live Response Latency Meter         - AX Business Impact KPIs      │
-└────────────────────────────────────────────────────────────────────────┘
+ ① 고객 문의 접수
+    · 채팅: "홍길동 01012345678 부가세 신고 대상인가요?"
+    · 또는 사업자등록증 사진 업로드
+              │
+              ▼
+ ② 고객 확인
+    · 채팅 → 전화번호 뒷자리 8개로 사무소 고객 DB(엑셀)에서 검색
+    · 사진 → AI(Gemini)가 사진에서 대표자명·상호·사업자번호·개업일자·업종을 읽어냄
+              │
+              ▼
+ ③ 국세청 조회
+    · 국세청 '사업자등록 상태조회' 공공 API로 계속/폐업 여부와 과세유형 확인
+    · 국세청 조회가 안 되면 → 고객 DB에 저장된 과세유형으로 대신 판단
+              │
+              ▼
+ ④ 규칙에 따라 판정 (아래 3번 표 참고)
+    · 세금계산서 발급 가능 여부
+    · 7월 부가세 확정신고 대상 여부
+              │
+              ▼
+ ⑤ 결과 전달 (화면 두 곳에 동시 표시)
+    · [고객용] 카카오톡 스타일 상담창에 AI가 작성한 안내 메시지
+    · [세무사용] 고객 정보 카드 + '복사' 버튼 + 처리 시간 지표
 ```
 
 ---
 
-## 🚀 3. Key Modules & Technical Implementation (핵심 기능)
+## 3. 과세유형별 판정 규칙
 
-### 1️⃣ Module 1: TA ERP Database 실시간 매핑 & 고객 식별
-- 유입된 고객 정보(이름/전화번호)를 바탕으로 내부 세무회계 ERP DB를 고속 탐색(`Pandas`)[cite: 3].
-- 대표자명, 상호명, 사업자번호, 개업일자, 업종코드를 자동 정합성 검증 후 구조화 데이터로 파싱[cite: 3].
+국세청 조회 결과(또는 고객 DB 값)를 아래 규칙에 그대로 대입합니다. **이 판단은 AI가 아니라 코드에 정해진 규칙이 합니다.**
 
-### 2️⃣ Module 2: Gemini 2.0 Multimodal Vision API 기반 사업자등록증 OCR
-- 사업자등록증 서류 이미지 업로드 시 Gemini Vision 엔진이 메타데이터를 구조화된 JSON 객체로 Zero-shot 파싱.
-- 비정형 이미지 데이터 유입 시에도 수동 타이핑 없는 1-Click 무중단 파이프라인 구현.
+| 국세청 과세유형 / 상태 | 세금계산서 발급 | 7월 부가세 신고 안내 |
+| :--- | :--- | :--- |
+| 일반과세자 | 발급 가능 | 신고 대상 (7월 제1기 확정신고) |
+| 간이과세자 (세금계산서 발급사업자) | 발급 가능 | 조건부 대상: 상반기 발급 시 7월 신고, 미발급 시 다음 해 1월 정기신고 |
+| 간이과세자 (영수증 전용) | 발급 불가 | 신고 대상 아님 |
+| 폐업 | 발급 불가 | 폐업일이 속한 달의 말일부터 25일 이내 폐업 확정신고 |
+| 그 밖의 경우 | 세무사 확인 필요 | 신고 대상으로 안내 |
 
-### 3️⃣ Module 3: 국세청 공공데이터 API 실시간 동기화 & Failover
-- 국세청 공식 `사업자등록정보 진단 API`를 실시간 호출하여 실제 홈택스 기준 사업자 상태(계속/폐업) 및 과세유형(일반/간이/면세) 동기화[cite: 1].
-- 공공데이터 API 응답 지연/실패 시 내부 ERP DB 기준값으로 즉각 전환하는 **고가용성 페일오버(Fallback) 아키텍처** 채택.
-
-### 4️⃣ Module 4: 세법 기반 Tax Grounding & 맞춤형 상담문 생성
-- 판별된 과세유형과 세금계산서 발급 권한에 맞추어 전문적이고 친절한 1:1 세무 응대 메시지 실시간 생성[cite: 2, 3].
-- 환각(Hallucination) 방지를 위해 국세청 API 확정 데이터 및 법적 면책 조항 프롬프트를 Grounding하여 컴플라이언스 리스크 원천 차단.
-
-### 5️⃣ Module 5: 전문가 전용 백오피스 & 1-Click Clipboard UX
-- 파싱된 사업자 메타데이터를 백오피스 대시보드에 실시간 카드 형태로 시각화[cite: 3].
-- 세무 프로그램(더존 Smart A, 세무사랑 등) 전표 메모란에 즉각 붙여넣을 수 있는 **1-Click Clipboard 복사 컴포넌트** 탑재.
+모든 안내문 끝에는 *"본 안내는 공공데이터 기반 1차 진단 결과이며, 최종 세무 신고는 전담 세무사의 검토 후 처리됩니다"* 라는 문구가 자동으로 붙습니다.
 
 ---
 
-## 📈 4. AX Business Impact (정량적 비즈니스 성과)
+## 4. 화면별 기능 데모
 
-| 핵심 지표 (KPIs) | As-Is (수동 처리) | To-Be (AI Pipeline) | 개선 효과 (ROI) |
+### ① 채팅으로 문의 → 자동 진단 및 답변
+
+<div align="center">
+  <img src="chat.gif" width="90%" alt="채팅 문의 데모"/>
+</div>
+
+- 고객이 이름과 전화번호를 입력하면 사무소 고객 DB에서 바로 찾아냅니다.
+- 국세청 조회 결과로 과세유형, 세금계산서 발급 가능 여부, 7월 신고 대상 여부를 판정합니다.
+- 숫자가 부족하면(전화번호 누락 등) "대표자명과 전화번호를 함께 남겨 달라"고 다시 요청합니다.
+
+### ② 고객 DB 랜덤 샘플로 시연
+
+<div align="center">
+  <img src="random.gif" width="90%" alt="DB 랜덤 샘플 데모"/>
+</div>
+
+- `🎲 DB 랜덤 샘플 호출` 버튼을 누르면 고객 DB에서 한 명을 골라 문의 상황을 자동으로 재현합니다.
+- 일반과세자, 간이과세자 등 여러 경우의 판정 결과를 빠르게 확인할 수 있습니다.
+- 오른쪽 백오피스에 세무사용 고객 정보 카드가 함께 채워집니다.
+
+### ③ 사업자등록증 사진으로 진단 (OCR)
+
+<div align="center">
+  <img src="directOCR.gif" width="90%" alt="사업자등록증 OCR 데모"/>
+</div>
+
+- 사업자등록증 사진(PNG, JPG)을 올리면 AI가 대표자명, 상호명, 사업자번호, 개업일자, 업종을 읽어 정리합니다.
+- 손으로 입력하지 않아도 같은 진단 과정이 이어서 진행됩니다.
+
+### ④ 세무사용 백오피스
+
+- **고객 정보 카드**: 국세청 상태, 대표자명, 상호, 사업자번호, 개업일자·업종, 과세유형, 세금계산서 발급 권한, 7월 신고 여부를 한눈에 표시합니다.
+- **복사 버튼**: 대표자명·상호·사업자번호·개업일자·업종을 한 번에 복사해 세무 프로그램(더존 Smart A, 세무사랑 등) 메모란에 바로 붙여 넣을 수 있습니다.
+- **처리 시간 지표**: 사람이 처리할 때(180초 기준)와 비교해 이번 응대 시간과 누적 평균 응대 시간을 보여줍니다.
+
+---
+
+## 5. AI를 안전하게 쓰기 위한 장치
+
+생성형 AI는 그럴듯하지만 틀린 내용을 만들어 낼 수 있습니다(이를 '환각'이라고 합니다). 세무 안내에서는 이런 실수가 곧 리스크이므로 다음과 같이 설계했습니다.
+
+1. **판단은 규칙이, 문장은 AI가**: 과세유형과 신고 대상은 국세청 데이터와 위 판정 규칙으로 정하고, AI에는 그 결과를 넘겨 정해진 형식의 안내문만 쓰게 합니다.
+2. **국세청 조회 실패 대비**: 국세청 API 응답이 없거나 키가 없으면, 사무소 고객 DB에 저장된 과세유형으로 대신 판단합니다.
+3. **AI 연결 실패 대비**: AI 응답을 받지 못해도 같은 형식의 기본 안내문으로 답변이 나가서 상담이 멈추지 않습니다.
+4. **최종 판단은 세무사**: 모든 안내문에 "1차 진단이며 최종 신고는 담당 세무사 검토 후 처리"라는 문구가 들어갑니다.
+
+---
+
+## 6. 기대 효과
+
+| 지표 | 기존 (사람이 처리) | 도입 후 | 효과 |
 | :--- | :---: | :---: | :---: |
-| **인바운드 CS 1건당 응대 시간** | 180초 (3분)[cite: 1, 3] | **1.5초** | **99.2% 리드타임 단축** |
-| **과세유형 및 신고대상 판별 정확도** | 휴먼 에러 위험 상존 | 국세청 실시간 API 기반[cite: 1] | **100% 정합성 유지** |
-| **백오피스 전표 메모 입력 공수** | 수동 작성 (30초) | 1-Click Clipboard 복사 | **즉시 입력 가능 (0초)** |
-| **월 1,000건 기준 절감 시간** | 50.0시간 | **0.4시간** | **월 49.6시간 업무 공수 절감** |
+| 문의 1건당 응대 시간 | 약 180초 (3분) | 1.5초 이내 | 약 99% 단축 |
+| 세무 프로그램 메모 입력 | 직접 타이핑 (약 30초) | 복사 버튼 한 번 | 재입력 작업 제거 |
+| 월 1,000건 기준 소요 시간 | 약 50시간 | 약 0.4시간 | 월 약 49.6시간 절감 |
+
+> 기존 처리 시간 180초와 월 1,000건은 실무 경험을 바탕으로 한 가정값이며, 도입 후 시간은 데모 환경에서 측정한 값입니다.
 
 ---
 
-## 🛠️ 5. Tech Stack & Environment
+## 7. 사용한 기술
 
-- **Frontend / Dashboard**: `Streamlit 1.30+`, `HTML5`, `Custom CSS & JavaScript`[cite: 3]
-- **Language & Runtime**: `Python 3.10+`[cite: 3]
-- **AI & Multimodal Engine**: `Google GenAI SDK` (`gemini-2.0-flash`, `gemini-1.5-flash`)[cite: 1, 3]
-- **External Integration**: 국세청_사업자등록정보 진단 및 조회 서비스 Open API (`data.go.kr`)[cite: 1]
-- **Data Engineering**: `Pandas`, `OpenPyXL`, `Pillow (PIL)`[cite: 3]
-- **Environment Management**: `python-dotenv`[cite: 1]
+| 분야 | 사용 기술 | 쉽게 말하면 |
+| :--- | :--- | :--- |
+| 화면 | Streamlit, HTML/CSS/JavaScript | 웹 브라우저에서 보는 상담창과 백오피스 화면 |
+| 프로그래밍 언어 | Python 3.10 이상 | 전체 로직을 작성한 언어 |
+| AI | Google Gemini (Flash 계열) | 안내문 작성과 사업자등록증 사진 읽기. 사용 가능한 모델 중 `gemini-3.6-flash` → `gemini-2.5-flash` → `gemini-2.0-flash` 순으로 자동 선택 |
+| 외부 데이터 | 국세청 사업자등록정보 진단 및 조회 서비스 (공공데이터포털 `data.go.kr`) | 사업자 상태와 과세유형을 실시간으로 확인 |
+| 데이터 처리 | Pandas, OpenPyXL, Pillow | 엑셀 고객 DB 읽기·검색, 이미지 열기 |
+| 환경 설정 | python-dotenv | API 키를 코드와 분리해 안전하게 보관 |
 
 ---
 
-## 📁 6. Repository Structure (프로젝트 구조)
+## 8. 파일 구성
 
 ```plaintext
 tax-ai-agent-pipeline/
-├── app.py                  # Streamlit 메인 파이프라인 및 UI 대시보드
-├── DB.xlsx                 # TA 세무회계 ERP 고객 데이터베이스 샘플 (150건)
-├── .env.example            # 환경변수 설정 템플릿
-├── requirements.txt        # 의존성 패키지 목록
-├── README.md               # 프로젝트 기술 및 비즈니스 문서
-├── chat.gif                # 실시간 CS & 국세청 과세유형 진단 데모
-├── random.gif              # ERP DB 탐색 & 세법 분기 데모
-└── directOCR.gif           # Multimodal Vision 사업자등록증 OCR 데모
+├── app.py              # 프로그램 본체 (화면 + 조회 + 판정 + AI 답변)
+├── DB_balanced.xlsx    # 시연용 고객 DB 샘플 (48건, 세무 프로그램(TA) 형식)
+├── requirements.txt    # 설치가 필요한 Python 패키지 목록
+├── .env.example        # API 키 설정 예시 파일
+├── README.md           # 이 문서
+├── demo.gif            # 전체 화면 데모
+├── chat.gif            # 채팅 문의 데모
+├── random.gif          # DB 랜덤 샘플 데모
+└── directOCR.gif       # 사업자등록증 OCR 데모
 ```
+
+> 고객 DB 엑셀은 열 이름이 조금 달라도(예: `대표자명`/`성명`, `전화번호`/`연락처`, `사업자등록번호`/`사업자번호`) 자동으로 알아봅니다. `DB_balanced.xlsx`가 없으면 `DB.xlsx`를 찾습니다.
 
 ---
 
-## 💻 7. Quick Start (로컬 실행 가이드)
+## 9. 직접 실행해 보기
 
-### 1) 저장소 복제 (Clone)
+### 1) 내려받기
 ```bash
-git clone [https://github.com/chikitee/tax-ai-agent-pipeline.git](https://github.com/chikitee/tax-ai-agent-pipeline.git)
+git clone https://github.com/chikitee/tax-ai-agent-pipeline.git
 cd tax-ai-agent-pipeline
 ```
 
-### 2) 가상환경 구축 및 패키지 설치
+### 2) 가상환경 만들고 패키지 설치
 ```bash
 python -m venv venv
 
 # Windows
 .\venv\Scripts\activate
 
-# Mac/Linux
+# Mac / Linux
 source venv/bin/activate
 
 pip install -r requirements.txt
 ```
 
-### 3) 환경변수(.env) 설정
-프로젝트 루트 경로에 `.env` 파일을 생성하고 발급받은 API 키를 입력합니다[cite: 1]:
+### 3) API 키 설정
+`.env.example` 파일을 복사해 `.env` 파일을 만들고, 발급받은 키를 넣습니다.
 ```env
-GEMINI_API_KEY=your_gemini_api_key_here
-NTS_PUBLIC_API_KEY=your_nts_public_data_api_key_here
+GEMINI_API_KEY=여기에_Gemini_API_키
+NTS_PUBLIC_API_KEY=여기에_공공데이터포털_국세청_API_키
 ```
+- Gemini API 키: Google AI Studio에서 발급
+- 국세청 API 키: 공공데이터포털(data.go.kr)에서 '국세청_사업자등록정보 진단 및 조회 서비스' 활용 신청 후 발급
 
-### 4) 대시보드 실행
+> 키가 없어도 실행은 됩니다. 이 경우 국세청 조회 대신 고객 DB 값으로 판정하고, AI 대신 기본 안내문으로 답변합니다.
+
+### 4) 실행
 ```bash
 streamlit run app.py
 ```
-실행 후 브라우저에서 `http://localhost:8501`로 접속하여 파이프라인을 테스트합니다[cite: 3].
+브라우저에서 `http://localhost:8501` 로 접속하면 됩니다.
 
 ---
 
-## 🌟 8. AX Advisory Insights (컨설팅 관점의 차별성)
+## 10. 현재 한계
 
-1. **Enterprise API 결합형 AI Agent**: 단순 LLM 질의응답을 넘어 국세청 공공데이터 API 및 사내 ERP(TA) 데이터베이스를 결합한 **실무 지향형 복합 파이프라인**을 구현했습니다[cite: 1, 3].
-2. **세무 컴플라이언스 가드레일(Guardrail)**: 환각(Hallucination) 방지를 위해 공공데이터 API 확정 과세유형 및 부가가치세법 룰 엔진을 결합하여 오안내 리스크를 원천 차단했습니다[cite: 1, 2].
-3. **SaaS 독립형 Full-Stack Sandbox**: 특정 메신저 SaaS API 제약 및 비용 종속성 없이 엔터프라이즈 환경에 즉시 커스터마이징 및 이식이 가능한 표준 아키텍처를 제시합니다[cite: 1, 3].
+- **시연용 환경입니다.** 카카오톡 화면은 실제 메신저 연동이 아니라 비슷하게 만든 화면이고, 고객 DB도 48건짜리 샘플입니다.
+- **7월 제1기 확정신고 기준**으로 안내하도록 만들어져 있습니다. 다른 신고 시기에는 안내 문구와 규칙을 바꿔야 합니다.
+- 1차 안내용 도구이며, **최종 신고 판단은 반드시 담당 세무사가 검토**해야 합니다.
+
+---
+
+## 🌟 이 프로젝트에서 보여주고 싶은 점
+
+1. **실무 데이터와 AI의 결합**: 단순 AI 챗봇이 아니라 국세청 공공데이터와 사무소 고객 DB를 함께 쓰는 업무 자동화 흐름을 직접 설계하고 구현했습니다.
+2. **세무 리스크를 고려한 설계**: AI가 세법 판단을 하지 않도록 역할을 나누고, 조회 실패 대비책과 세무사 검토 문구를 넣어 오안내 위험을 줄였습니다.
+3. **특정 메신저에 묶이지 않는 구조**: 특정 메신저 서비스의 유료 API에 의존하지 않고 독립된 화면으로 만들어, 다른 사무소 환경에도 옮겨 쓰기 쉽게 했습니다.
